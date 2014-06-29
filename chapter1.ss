@@ -472,13 +472,73 @@
 
 ;; there we go! a lovely way to multiply numbers
 
+;; exercise 1.18
+
+;; now we'd like to take our insights from the above and turn that into an iterative procedure
+
+(define fast-mult
+  (lambda (a b)
+    (letrec ((iter-mult 
+               (lambda (o e b a)
+                 (cond
+                   ((eq? b 0) 0)
+                   ((eq? b 1)(+ o (double e)))
+                   ((even? b)
+                    (iter-mult o (+ e a)(halve b) a))
+                   (else
+                     (cond ((and (eq? o 0)(eq? e 0))
+                            (iter-mult a e (sub1 b) a))
+                           (else
+                             (iter-mult o (+ e a)(sub1 b) a))))))))
+      (iter-mult 0 0 b a))))
+                      
+;; above is my wacky attempt which doens't make sense or work
+
+(define m-halve
+  (lambda (n)
+    (cond ((even? n)(/ n 2))
+          (else
+            (/ (sub1 n) 2)))))
 
 
+(define multiplication-is-for-peasants
+  (lambda (a b)
+    (letrec ((iter-mult
+               (lambda (n a b)
+                 (cond ((or (eq? a 0)(eq? b 0)) 0)
+                       ((eq? b 1)(+ n a))
+                       ((even? b)
+                        (iter-mult n (double a)(halve b)))
+                       (else
+                         (iter-mult (+ n a)(double a)(m-halve b)))))))
+      (iter-mult 0 a b))))
+
+;; ahh that's done it
 
 
+;;exercise 1.19
+
+(define fib
+  (lambda (n)
+    (letrec ((fib-iter
+               (lambda (a b p q count)
+                 (cond ((eq? count 0) b)
+                       ((even? count)
+                        (fib-iter a b
+                                  (+ (* p p)(* q q))
+                                  (+ (* 2 p q)␅(* q q))
+                                  (/ count 2)))
+                       (else (fib-iter (+ (* b q)(* a q)(* a p))
+                                       (+ (* b p)(* a q))
+                                       p
+                                       q
+                                       (- count 1)))))))
+      (fib-iter 1 0 0 1 n))))
 
 
-
+;; nifty! this is so much faster than the linear recursive one it's ridiculous
+;; this algo could come in handy for some of the project euler questions!
+               
 
 
 
