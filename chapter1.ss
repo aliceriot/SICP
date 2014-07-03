@@ -539,6 +539,49 @@
 ;; nifty! this is so much faster than the linear recursive one it's ridiculous
 ;; this algo could come in handy for some of the project euler questions!
                
+;; a nice algorithm for computing the greatest common denominator of two numbers
+;; is euclid's algorithm
+
+(define euclid-gcd
+  (lambda (a b)
+    (if (= b 0)
+      a
+      (euclid-gcd b (remainder a b)))))
+
+;; exercise 1.20
+;; we'd like to evaluate (euclid-gcd 206 40) in both normal-order-evaluation
+;; and applicative-order-evaluation
+
+;; applicative order:
+
+(euclid-gcd 206 40)
+(euclid-gcd 40 (remainder 206 40))
+(euclid-gcd 40 6)
+(euclid-gcd 6 (remainder 40 6))
+(euclid-gcd 6 4)
+(euclid-gcd 4 (remainder 6 4))
+(euclid-gcd 4 2)
+(euclid-gcd 2 (remainder 4 2))
+(euclid-gcd 2 0)
+0
+
+;; normal order looks something like
+
+(euclid-gcd 206 40)
+(euclid-gcd 40 (remainder 206 40))
+(if (= (remainder 206 40) 0)
+  40
+  (euclid-gcd (remainder 206 40) 
+
+;; and on and on and on..
+;; according to the website http://eli.thegreenplace.net/2007/07/04/sicp-sections-124-125/
+;; this results in 18 total calls to remainder, obviously this is going to be quite a bit less efficient.
+
+
+
+
+
+
 
 
 
