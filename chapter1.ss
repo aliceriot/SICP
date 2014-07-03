@@ -577,13 +577,82 @@
 ;; according to the website http://eli.thegreenplace.net/2007/07/04/sicp-sections-124-125/
 ;; this results in 18 total calls to remainder, obviously this is going to be quite a bit less efficient.
 
+;; Next section! All about testing for primality!
+
+(define (square x)(* x x))
+
+(define prime?
+  (lambda (n)
+    (letrec
+       ((find-divisor
+         (lambda (n test-divisor)
+           (cond
+             ((> (square test-divisor) n) n)
+             ((divides? test-divisor n) test-divisor)
+             (else
+               (find-divisor n (add1 test-divisor))))))
+        (divides?
+          (lambda (a b)
+            (= (remainder b a) 0))))
+       (= n (find-divisor n 2)))))
+
+;; separating out the smallest-divisor portion (for exercise 1.21)
+
+(define (smallest-divisor n)(find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n)n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+
+(define (divides? a b)(= (remainder b a) 0))
+
+;; I think this is not a particularly good algorithm - it has order of growth O(\sqrt{n})
+
+;; Another algorithm! This one runs in O(log n), and it known as Fermat's little theorem
+
+;; the theorem states that for a prime number n and a positive integer a < n, a^n is congrument
+;; to a modulo n
+
+;; I admit I have no idea how or why this works!
+
+;; implementation
+
+(define expmod
+  (lambda (base expo m)
+    (cond ((= expo 0) 1)
+          ((even? expo)
+           (remainder
+             (square (expmod base (/ expo 2) m))
+             m))
+          (else
+            (remainder
+              (* base (expmod base (- expo 1) m))
+              m)))))
+
+(define fermat-test
+  (lambda (n)
+    (define (try-it a)
+      (= (expmod a n n) a))
+    (try-it (+ 1 (random (- n 1))))))
+
+(define fast-prime
+  (lambda (n times)
+    (cond ((= times 0) true)
+          ((fermat-test n)(fast-prime n (- times 1)))
+          (else false))))
+
+;; the above doesn't work, not sure why!
 
 
+;; exercise 1.21
 
+(smallest-divisor 199) -> 199
+(smallest-divisor 1999) -> 1999
+(smallest-divisor 19999) -> 7
 
-
-
-
+;; aha! interesting...
+;; so 199 and 1999 are primes, while 19999 is not!
 
 
 
